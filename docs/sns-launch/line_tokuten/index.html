@@ -46,11 +46,16 @@
   .copy{flex:1;display:flex;align-items:baseline;justify-content:flex-end;white-space:nowrap;font-family:'Noto Serif JP',serif;font-weight:900;color:var(--ink);font-size:var(--fs,100px);line-height:1}
   .copy .max{position:relative;align-self:flex-start;margin-right:.08em;writing-mode:vertical-rl;text-orientation:upright;
     font-size:.32em;letter-spacing:.04em;color:#fff;background:var(--navy);padding:.2em .12em;border-radius:.1em;line-height:1;margin-left:.2em;margin-top:.22em}
-  .copy .hero{position:relative;background:linear-gradient(transparent 80%,rgba(200,32,47,.9) 80%,rgba(200,32,47,.9) 93%,transparent 93%);padding-right:.02em}
+  .copy .hero{position:relative;padding-right:.02em;isolation:isolate}
+  .copy .hero::after{content:"";position:absolute;left:-.02em;right:0;bottom:-.08em;height:.12em;background:rgba(200,32,47,.9);z-index:0}
+  .copy .hero>*{position:relative;z-index:1}
+  .copy .hero .txt{position:relative;z-index:1}
   .copy .num{font-size:1.24em;letter-spacing:-.05em;margin-right:.02em;background:linear-gradient(180deg,#f0cf78,#a8781c);-webkit-background-clip:text;background-clip:text;color:transparent;
     filter:drop-shadow(0 .03em 0 var(--navy))}
   .copy .wo{font-size:.56em;margin-left:.08em}
-  .copy .free{font-size:.8em;color:var(--red);margin:0 .02em}
+  .copy .free{font-size:.8em;margin:0 .02em}
+  .free-ink .copy .free{color:var(--ink)}
+  .free-gold .copy .free{background:linear-gradient(180deg,#f0cf78,#a8781c);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 .03em 0 var(--navy))}
   .copy .pre{font-size:.62em;letter-spacing:.01em}
 
   /* ---------- grid ---------- */
@@ -81,21 +86,31 @@
   .feature .l2 em{font-style:normal;color:var(--gold2)}
 
   /* ---------- footer ---------- */
-  .foot{position:relative;margin:44px -40px 0;height:240px;background:linear-gradient(90deg,var(--navy),#12306e 60%,var(--navy));
-    display:flex;align-items:center;padding-left:330px;padding-right:40px;gap:30px;color:#fff}
+  .foot{position:relative;margin:48px -40px 0;height:262px;color:#fff;
+    background:radial-gradient(700px 260px at 78% 0%,rgba(31,87,200,.45),transparent 70%),linear-gradient(90deg,#0a1a3f,#12306e 55%,#0a1a3f);
+    display:flex;align-items:center;padding:0 40px 0 318px;gap:44px}
   .foot::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:linear-gradient(90deg,var(--gold),var(--gold2),var(--gold))}
-  .avatar{position:absolute;left:44px;bottom:24px;width:250px;height:250px;border-radius:50%;border:8px solid #fff;
+  .avatar{position:absolute;left:40px;top:-34px;width:250px;height:250px;border-radius:50%;border:8px solid #fff;
     box-shadow:0 0 0 5px var(--gold),0 14px 30px rgba(0,0,0,.35);overflow:hidden;background:#ede4cf}
   .avatar img{width:100%;height:100%;object-fit:cover}
-  .who .name{font-family:'Noto Serif JP',serif;font-weight:900;font-size:58px;line-height:1}
-  .who .name small{font-size:28px;color:var(--gold2);margin-left:14px;letter-spacing:.08em}
-  .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;width:720px}
-  .chips span{border:2px solid rgba(243,217,139,.8);color:#fff;font-weight:700;font-size:25px;padding:4px 14px;border-radius:8px;background:rgba(255,255,255,.06)}
-  .chips span b{color:var(--gold2);font-size:30px}
-  .cta{margin-left:auto;text-align:center}
-  .cta .l1{font-weight:900;font-size:30px;color:var(--gold2);letter-spacing:.06em}
-  .cta .btn{margin-top:10px;background:var(--line);color:#fff;font-weight:900;font-size:46px;padding:16px 40px;border-radius:999px;
-    box-shadow:0 6px 0 #04913e,0 12px 24px rgba(0,0,0,.35);white-space:nowrap}
+  .who{flex:none}
+  .who .name{font-family:'Noto Serif JP',serif;font-weight:900;font-size:56px;line-height:1;display:flex;align-items:baseline;gap:16px}
+  .who .name small{font-size:26px;color:var(--gold2);letter-spacing:.1em}
+  .chips{display:grid;grid-template-columns:auto auto;gap:10px;margin-top:20px}
+  .chips span{border:1.5px solid rgba(243,217,139,.7);color:#e9eefb;font-weight:700;font-size:22px;line-height:1;padding:9px 14px;border-radius:6px;background:rgba(255,255,255,.05);white-space:nowrap}
+  .chips span b{color:var(--gold2);font-size:28px;margin:0 2px}
+  .divider{flex:none;width:2px;height:170px;background:linear-gradient(180deg,transparent,rgba(243,217,139,.8),transparent)}
+  .cta{flex:1;min-width:0;display:flex;flex-direction:column;align-items:stretch}
+  .cta .l1{text-align:center;font-weight:900;font-size:30px;color:var(--gold2);letter-spacing:.12em;white-space:nowrap}
+  .cta .l1 b{color:#fff}
+  .cta .btn{position:relative;margin-top:16px;height:122px;border-radius:999px;display:flex;align-items:center;justify-content:flex-start;gap:20px;padding-left:24px;
+    background:linear-gradient(180deg,#22dc72 0%,#06c755 55%,#04ad49 100%);color:#fff;font-weight:900;font-size:54px;letter-spacing:.03em;white-space:nowrap;
+    box-shadow:0 7px 0 #037a34,0 16px 30px rgba(0,0,0,.4),inset 0 2px 0 rgba(255,255,255,.35);text-shadow:0 3px 0 rgba(3,122,52,.55)}
+  .cta .btn::before{content:"";position:absolute;left:40px;right:40px;top:7px;height:40%;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.35),rgba(255,255,255,0))}
+  .cta .btn img{width:78px;height:78px;border-radius:20px;box-shadow:0 0 0 4px #fff;position:relative}
+  .cta .btn span{position:relative}
+  .cta .btn i{position:absolute;right:26px;width:72px;height:72px;border-radius:50%;background:#fff;display:grid;place-items:center}
+  .cta .btn i::after{content:"";margin-left:8px;border-left:26px solid #06c755;border-top:17px solid transparent;border-bottom:17px solid transparent}
 </style>
 </head>
 <body>
@@ -110,7 +125,7 @@
 
   <div class="offer">
     <div class="stamp"><span>有料級</span></div>
-    <div class="copy" id="copy"><span class="max">最大</span><span class="hero"><span class="num">23</span>大特典</span><span class="wo">を</span><span class="free">無料</span><span class="pre">プレゼント</span></div>
+    <div class="copy" id="copy"><span class="max">最大</span><span class="hero"><span class="num">23</span><span class="txt">大特典</span></span><span class="wo">を</span><span class="free">無料</span><span class="pre">プレゼント</span></div>
   </div>
 
   <div class="grid" id="grid"></div>
@@ -126,14 +141,16 @@
         <span>簿記2級・FP2級</span>
       </div>
     </div>
+    <div class="divider"></div>
     <div class="cta">
-      <div class="l1">▼ ポスト本文のURLから ▼</div>
-      <div class="btn">今すぐ無料で受け取る</div>
+      <div class="l1">▼ 受け取りは<b>ポスト本文のURL</b>から ▼</div>
+      <div class="btn"><img src="assets/line.png" alt=""><span>今すぐ無料で受け取る</span><i></i></div>
     </div>
   </div>
 </div>
 
 <script>
+  document.body.classList.add('free-' + (new URLSearchParams(location.search).get('free') || 'gold'));
   const pad = n => String(n).padStart(2,'0');
   const card = n => `
     <div class="card"><img src="assets/thumbs/${pad(n)}.jpg" alt="">
