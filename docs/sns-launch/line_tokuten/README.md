@@ -1,6 +1,6 @@
 # LINE登録特典一覧画像（X投稿用）
 
-- 完成画像（1800×1865px）：`output_A_無料黒.png`（「無料」＝プレゼントと同じ黒）／`output_B_無料金.png`（「無料」＝23と同じ金）
+- 完成画像：`output.png`（1800×1852px／「無料」＝金のB案を採用。黒は `index.html?free=ink`）
 - 元データ：`index.html`（テキスト・構成の編集はここ）
 - 素材：`assets/thumbs/01〜23.jpg`（Driveの特典サムネを縮小）、`assets/icon.png`（Xアイコン）
 
@@ -8,7 +8,7 @@
 
 ```bash
 ./fetch-fonts.sh                          # 初回のみ
-NODE_PATH=$(npm root -g) node render.js   # A/B 2パターンを書き出す（index.html?free=ink|gold）
+NODE_PATH=$(npm root -g) node render.js   # output.png を書き出す
 ```
 
 ## 構成
@@ -16,6 +16,6 @@ NODE_PATH=$(npm root -g) node render.js   # A/B 2パターンを書き出す（i
 | ゾーン | 内容 |
 |---|---|
 | 見出し | 日本株×初心者のマイルール構築ガイド / LINEアイコン＋公式LINE登録限定 |
-| オファー | [有料級] 最大23大特典を無料プレゼント（横幅いっぱいになるようJSで自動調整） |
+| オファー | [有料級] 最大23大特典を無料プレゼント（行全体を1つの基準サイズで比例させ、横幅いっぱいになるようJSで自動調整） |
 | グリッド | 特典01〜23を5列で並べ、最終行の特典23の横に「有料級 4日間の無料特別講義」カード（2枠分） |
 | フッター | アバター＋プロフィール（実績2×2）｜区切り線｜「ポスト本文のURLから」＋LINEボタン（右半分を全幅で使用） |

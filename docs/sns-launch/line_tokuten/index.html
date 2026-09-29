@@ -36,14 +36,14 @@
     background:linear-gradient(100deg,var(--navy) 0%,var(--blue) 55%,var(--navy2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
     filter:drop-shadow(0 6px 0 rgba(255,255,255,.9)) drop-shadow(0 12px 18px rgba(11,29,69,.25))}
 
-  .offer{display:flex;align-items:center;width:100%;margin-top:26px;gap:0}
+  .offer{display:flex;align-items:flex-end;width:100%;margin-top:30px;gap:0;font-size:var(--fs,100px)}
   .stamp{flex:none;position:relative;display:flex;align-items:center;justify-content:center;
-    height:170px;padding:0 34px;background:linear-gradient(160deg,#0b1d45,#16357a);color:var(--gold2);
-    font-family:'Noto Serif JP',serif;font-weight:900;font-size:84px;letter-spacing:.04em;white-space:nowrap;
+    height:1.1em;padding:0 .24em;margin-bottom:-.06em;background:linear-gradient(160deg,#0b1d45,#16357a);color:var(--gold2);
+    font-family:'Noto Serif JP',serif;font-weight:900;font-size:1em;letter-spacing:.04em;white-space:nowrap;
     box-shadow:0 10px 22px rgba(11,29,69,.3)}
-  .stamp::before{content:"";position:absolute;inset:8px;border:2px solid rgba(243,217,139,.75)}
-  .stamp span{background:linear-gradient(180deg,#fff3c4,#e2b654);-webkit-background-clip:text;background-clip:text;color:transparent}
-  .copy{flex:1;display:flex;align-items:baseline;justify-content:flex-end;white-space:nowrap;font-family:'Noto Serif JP',serif;font-weight:900;color:var(--ink);font-size:var(--fs,100px);line-height:1}
+  .stamp::before{content:"";position:absolute;inset:.06em;border:2px solid rgba(243,217,139,.75)}
+  .stamp span{font-size:.5em;background:linear-gradient(180deg,#fff3c4,#e2b654);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .copy{flex:1;display:flex;align-items:baseline;justify-content:flex-end;white-space:nowrap;font-family:'Noto Serif JP',serif;font-weight:900;color:var(--ink);font-size:1em;line-height:1}
   .copy .max{position:relative;align-self:flex-start;margin-right:.08em;writing-mode:vertical-rl;text-orientation:upright;
     font-size:.32em;letter-spacing:.04em;color:#fff;background:var(--navy);padding:.2em .12em;border-radius:.1em;line-height:1;margin-left:.2em;margin-top:.22em}
   .copy .hero{position:relative;padding-right:.02em;isolation:isolate}
@@ -52,11 +52,11 @@
   .copy .hero .txt{position:relative;z-index:1}
   .copy .num{font-size:1.24em;letter-spacing:-.05em;margin-right:.02em;background:linear-gradient(180deg,#f0cf78,#a8781c);-webkit-background-clip:text;background-clip:text;color:transparent;
     filter:drop-shadow(0 .03em 0 var(--navy))}
-  .copy .wo{font-size:.56em;margin-left:.08em}
-  .copy .free{font-size:.8em;margin:0 .02em}
+  .copy .wo{font-size:.62em;margin-left:.1em}
+  .copy .free{font-size:.98em;margin:0 .02em}
   .free-ink .copy .free{color:var(--ink)}
   .free-gold .copy .free{background:linear-gradient(180deg,#f0cf78,#a8781c);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 .03em 0 var(--navy))}
-  .copy .pre{font-size:.62em;letter-spacing:.01em}
+  .copy .pre{font-size:.8em;letter-spacing:0}
 
   /* ---------- grid ---------- */
   .grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:22px 18px;margin-top:40px}
@@ -168,16 +168,18 @@
 
   // オファー行を横幅いっぱいに合わせる（有料級スタンプ＋コピーで1720px）
   document.fonts.ready.then(() => {
-    const row = document.querySelector('.offer'), copy = document.getElementById('copy');
-    let lo = 40, hi = 220;
-    for (let i = 0; i < 20; i++) {
+    const row = document.querySelector('.offer'), copy = document.getElementById('copy'), stamp = document.querySelector('.stamp');
+    const need = () => stamp.getBoundingClientRect().width + [...copy.children].reduce((w, c) => {
+      const cs = getComputedStyle(c); return w + c.getBoundingClientRect().width + parseFloat(cs.marginLeft) + parseFloat(cs.marginRight);
+    }, 0) + 30;
+    copy.style.justifyContent = 'flex-start';
+    let lo = 40, hi = 260;
+    for (let i = 0; i < 24; i++) {
       const mid = (lo + hi) / 2;
-      copy.style.setProperty('--fs', mid + 'px');
-      copy.style.justifyContent = 'flex-start';
-      const used = document.querySelector('.stamp').offsetWidth + 28 + [...copy.children].reduce((w, c) => w + c.getBoundingClientRect().width, 0) + 12;
-      (used <= row.clientWidth ? lo = mid : hi = mid);
+      row.style.setProperty('--fs', mid + 'px');
+      (need() <= row.clientWidth ? lo = mid : hi = mid);
     }
-    copy.style.setProperty('--fs', lo + 'px');
+    row.style.setProperty('--fs', lo + 'px');
     copy.style.justifyContent = 'flex-end';
     document.body.dataset.ready = '1';
   });

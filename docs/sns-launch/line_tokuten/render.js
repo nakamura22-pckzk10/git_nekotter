@@ -1,7 +1,8 @@
-// 使い方: node render.js  →  「無料」の色違い2パターンを書き出す（fonts/ は fetch-fonts.sh で取得）
+// 使い方: node render.js  →  output.png を書き出す（fonts/ は fetch-fonts.sh で取得）
+// 「無料」の色は index.html?free=gold|ink で切替（採用：gold）
 const path = require('path');
 const { chromium } = require('playwright');
-const variants = { ink: 'output_A_無料黒.png', gold: 'output_B_無料金.png' };
+const variants = { gold: 'output.png' };
 (async () => {
   const browser = await chromium.launch({ executablePath: process.env.CHROMIUM_PATH || undefined });
   const page = await browser.newPage({ viewport: { width: 1800, height: 1000 }, deviceScaleFactor: 1 });
