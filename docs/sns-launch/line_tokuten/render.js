@@ -6,6 +6,7 @@ const { chromium } = require('playwright');
   const page = await browser.newPage({ viewport: { width: 1800, height: 1000 }, deviceScaleFactor: 1 });
   await page.goto('file://' + path.join(__dirname, 'index.html'));
   await page.evaluate(() => document.fonts.ready);
+  await page.waitForSelector('body[data-ready]');
   await page.waitForTimeout(300);
   const el = await page.$('#canvas');
   const box = await el.boundingBox();
