@@ -1,4 +1,6 @@
 // usage: node render.js <data.json> <out.png>
+// 配色: Xのライト(白)/ダーク(黒)どちらのタイムラインでも埋もれないよう、
+// 外枠は日の丸の赤、表は白パネルにしている（白にも黒にも強いコントラスト）。
 const fs = require("fs");
 const path = require("path");
 const si = require("simple-icons");
@@ -31,125 +33,87 @@ function logoHTML(r) {
   return `<div class="logo mono" style="background:${m.color}"><span style="font-size:${[0, 19, 15, 12, 10][Math.min(t.length, 4)]}px">${esc(t)}</span></div>`;
 }
 
-const cho = (v) => v / 1e12;
-const fmtCho = (x) => (x >= 100 ? x.toFixed(0) : x.toFixed(1));
-const fmtPer = (p) => (p == null || !isFinite(p) || p <= 0 ? null : p >= 100 ? p.toFixed(0) : p.toFixed(1));
+const fmtCho = (v) => (v / 1e12 >= 100 ? (v / 1e12).toFixed(0) : (v / 1e12).toFixed(1));
 const list = D.jp;
 const max = list[0].mcap;
-const total = list.reduce((a, r) => a + r.mcap, 0);
-const top10 = list.slice(0, 10).reduce((a, r) => a + r.mcap, 0);
-const pers = list.filter((r) => fmtPer(r.per)).sort((a, b) => a.per - b.per);
-const median = pers.length % 2 ? pers[(pers.length - 1) / 2].per : (pers[pers.length / 2 - 1].per + pers[pers.length / 2].per) / 2;
-const gap12 = list[0].mcap - list[1].mcap;
 
 function rows(slice, offset) {
   return slice
     .map((r, j) => {
       const i = offset + j;
-      const per = fmtPer(r.per);
-      const perCls = per == null ? "na" : r.per >= 40 ? "hot" : r.per < 15 ? "cool" : "";
       const name = nameOf(r);
       const len = [...name].reduce((a, c) => a + (c.charCodeAt(0) > 0xff ? 1 : 0.6), 0);
       return `<div class="row${i < 3 ? " top" : ""}">
         <div class="bar" style="width:${((r.mcap / max) * 100).toFixed(1)}%"></div>
-        <div class="rk rk${i + 1}">${i + 1}</div>
+        <div class="rk"><span class="${i < 3 ? `medal m${i + 1}` : ""}">${i + 1}</span></div>
         ${logoHTML(r)}
-        <div class="nm" style="font-size:${Math.max(13, Math.min(20, Math.floor(206 / len)))}px">${esc(name)}</div>
-        <div class="mc">${fmtCho(cho(r.mcap))}<small>兆円</small></div>
-        <div class="pe ${perCls}">${per == null ? "—" : `${per}<small>倍</small>`}</div>
+        <div class="nm" style="font-size:${Math.max(14, Math.min(23, Math.floor(290 / len)))}px">${esc(name)}</div>
+        <div class="mc">${fmtCho(r.mcap)}<small>兆円</small></div>
       </div>`;
     })
     .join("");
 }
 const half = Math.ceil(list.length / 2);
 const panel = (from, to) => `<div class="panel">
-  <div class="cols"><div>順位</div><div></div><div>企業名</div><div>時価総額</div><div>予想PER</div></div>
+  <div class="cols"><div>順位</div><div>企業名</div><div>時価総額</div></div>
   ${rows(list.slice(from, to), from)}</div>`;
 
-const fontCss = ["noto-sans-jp/500", "noto-sans-jp/700", "noto-sans-jp/900", "inter/500", "inter/600", "inter/700", "inter/800", "inter/900"]
+const fontCss = ["noto-sans-jp/500", "noto-sans-jp/700", "noto-sans-jp/900", "inter/600", "inter/700", "inter/800", "inter/900"]
   .map((f) => `<link rel="stylesheet" href="node_modules/@fontsource/${f}.css">`).join("");
 
 const html = `<!doctype html><html><head><meta charset="utf-8">${fontCss}<style>
-:root{--bg:#070A12;--line:rgba(255,255,255,.07);--tx:#F4F6FB;--mut:#8A93A8;--red:#FF3B55;--gold:#F5C451;--silver:#C9D1DD;--bronze:#D9925B}
+:root{--red:#D1002C;--red2:#A00022;--ink:#12141A;--mut:#6B7280;--line:#EEF0F3;--gold:#F2B705}
 *{box-sizing:border-box;margin:0;padding:0}
-body{width:${W}px;height:${H}px;background:var(--bg);color:var(--tx);font-family:Inter,"Noto Sans JP",sans-serif;overflow:hidden;position:relative;-webkit-font-smoothing:antialiased}
-.glow{position:absolute;inset:0;background:
-  radial-gradient(760px 460px at -6% -10%,rgba(255,59,85,.30),transparent 70%),
-  radial-gradient(620px 420px at 108% -6%,rgba(245,196,81,.16),transparent 70%),
-  radial-gradient(900px 520px at 50% 118%,rgba(255,59,85,.08),transparent 70%)}
-.grid{position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:40px 40px;mask-image:linear-gradient(#000 0,transparent 320px);opacity:.5}
-.sun{position:absolute;right:-120px;top:-150px;width:460px;height:460px;border-radius:50%;background:radial-gradient(circle at 40% 60%,rgba(255,59,85,.32),rgba(188,0,45,.08) 60%,transparent 70%);filter:blur(2px)}
-.wrap{position:relative;padding:36px 40px 0}
-.kicker{display:flex;justify-content:space-between;align-items:center;font:700 13px Inter;letter-spacing:.24em;color:var(--mut)}
-.pill{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);font:800 14px "Noto Sans JP";letter-spacing:.06em;color:var(--tx)}
-.pill i{width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px var(--gold)}
-h1{margin-top:16px;display:flex;align-items:center;gap:18px}
-h1 .flag{height:44px;border-radius:5px;box-shadow:0 0 0 1px rgba(255,255,255,.3),0 6px 20px rgba(0,0,0,.4)}
-h1 .t{font:900 58px/1 "Noto Sans JP";letter-spacing:-.01em}
-h1 .t em{font-style:normal;color:var(--red)}
-h1 .top{font:900 64px/1 Inter;background:linear-gradient(180deg,#FFE7A3,#F5C451 55%,#C98B2B);-webkit-background-clip:text;color:transparent;letter-spacing:-.02em}
-.kpis{margin-top:24px;display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:14px}
-.kpi{position:relative;padding:16px 20px 15px;border-radius:16px;background:linear-gradient(135deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.10);box-shadow:inset 0 1px 0 rgba(255,255,255,.08);overflow:hidden}
-.kpi .l{font:700 12px "Noto Sans JP";color:var(--mut);letter-spacing:.08em}
-.kpi .v{margin-top:6px;display:flex;align-items:center;gap:10px;font:900 34px/1 Inter;letter-spacing:-.01em;white-space:nowrap}
-.kpi .v small{font:800 15px "Noto Sans JP";margin-left:2px;color:var(--tx)}
-.kpi .v .n{font:900 22px "Noto Sans JP";white-space:nowrap;overflow:hidden;min-width:0;flex:1}
-.kpi .s{margin-top:8px;font:500 12px/1.4 "Noto Sans JP";color:var(--mut);white-space:nowrap}
-.kpi .s b{color:var(--tx);font-weight:700}
-.kpi.first{border-color:rgba(245,196,81,.35);background:linear-gradient(135deg,rgba(245,196,81,.14),rgba(255,255,255,.02))}
-.kpi.first .l{color:var(--gold)}
-.kpi .logo{width:58px;height:36px;flex:none}
-.panels{margin-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:22px}
-.panel{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.015));border:1px solid rgba(255,255,255,.08);border-radius:18px;overflow:hidden;position:relative}
-.panel::before{content:"";position:absolute;left:0;top:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),transparent)}
-.cols,.row{display:grid;grid-template-columns:30px 64px 1fr 106px 62px;align-items:center;column-gap:10px;padding:0 16px}
-.cols{height:36px;font:700 11px "Noto Sans JP";color:var(--mut);letter-spacing:.06em;border-bottom:1px solid var(--line)}
-.cols div:nth-child(n+4){text-align:right}
-.row{position:relative;height:69px;border-bottom:1px solid var(--line)}
+body{width:${W}px;height:${H}px;background:var(--red);color:var(--ink);font-family:Inter,"Noto Sans JP",sans-serif;overflow:hidden;position:relative;-webkit-font-smoothing:antialiased}
+.bg{position:absolute;inset:0;background:
+  radial-gradient(900px 700px at 88% 4%,#F0143F 0%,transparent 60%),
+  linear-gradient(180deg,var(--red) 0%,var(--red2) 100%)}
+.rays{position:absolute;inset:0;background:repeating-conic-gradient(from -4deg at 88% 6%,rgba(255,255,255,.07) 0 5deg,transparent 5deg 12deg);
+  mask-image:radial-gradient(1100px 900px at 88% 6%,#000 20%,transparent 75%)}
+.sun{position:absolute;right:52px;top:-86px;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle at 45% 55%,rgba(255,255,255,.22),rgba(255,255,255,.06) 70%);border:2px solid rgba(255,255,255,.18)}
+.wrap{position:relative;padding:40px 40px 0}
+.kicker{display:flex;align-items:center;gap:14px;font:800 14px Inter;letter-spacing:.26em;color:rgba(255,255,255,.85)}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;background:#fff;color:var(--red);font:900 15px "Noto Sans JP";letter-spacing:.04em;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.pill i{width:8px;height:8px;border-radius:50%;background:var(--red)}
+h1{margin-top:18px;display:flex;align-items:center;gap:18px;color:#fff}
+h1 .t{font:900 64px/1 "Noto Sans JP";letter-spacing:-.01em;text-shadow:0 4px 18px rgba(80,0,10,.35)}
+h1 .top{font:900 60px/1 Inter;letter-spacing:-.02em;color:var(--red);background:#fff;padding:8px 18px 10px;border-radius:14px;box-shadow:0 6px 20px rgba(80,0,10,.3)}
+.panels{margin-top:30px;display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.panel{background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 18px 40px rgba(70,0,12,.35),0 0 0 1px rgba(0,0,0,.04)}
+.cols,.row{display:grid;grid-template-columns:44px 64px 1fr 128px;align-items:center;column-gap:12px;padding:0 20px 0 16px}
+.cols{height:42px;background:#F6F7F9;font:800 12px "Noto Sans JP";color:var(--mut);letter-spacing:.1em;border-bottom:1px solid var(--line)}
+.cols div:nth-child(2){grid-column:2 / 4;padding-left:0}
+.cols div:last-child{text-align:right}
+.row{position:relative;height:77.4px;border-bottom:1px solid var(--line)}
 .row:last-child{border-bottom:0}
-.bar{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,rgba(255,59,85,0),rgba(255,59,85,.16));border-right:2px solid rgba(255,59,85,.45)}
-.rk{position:relative;font:800 19px Inter;color:#6F7890;text-align:center;font-variant-numeric:tabular-nums}
-.rk1,.rk2,.rk3{font-size:22px;font-weight:900}
-.rk1{color:var(--gold);text-shadow:0 0 16px rgba(245,196,81,.55)} .rk2{color:var(--silver)} .rk3{color:var(--bronze)}
-.logo{position:relative;width:64px;height:40px;border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.bar{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,rgba(209,0,44,0),rgba(209,0,44,.07))}
+.bar::after{content:"";position:absolute;left:0;right:0;bottom:0;height:4px;background:linear-gradient(90deg,rgba(209,0,44,.15),rgba(209,0,44,.75));border-radius:0 2px 2px 0}
+.rk{position:relative;text-align:center;font:800 22px Inter;color:#9AA1AD;font-variant-numeric:tabular-nums}
+.medal{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50%;font:900 20px Inter;color:#fff;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18),0 3px 8px rgba(0,0,0,.18)}
+.m1{background:linear-gradient(160deg,#FFD84D,#E0A100)} .m2{background:linear-gradient(160deg,#D9DEE6,#9CA5B4)} .m3{background:linear-gradient(160deg,#EAB07A,#B86B2E)}
+.logo{position:relative;width:64px;height:42px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid #E6E8EC}
 .logo img{max-width:54px;max-height:28px;object-fit:contain}
-.logo svg{width:24px;height:24px}
+.logo svg{width:26px;height:26px}
 .logo.mono span{font:900 15px "Noto Sans JP",Inter;color:#fff;letter-spacing:-.03em;white-space:nowrap}
-.nm{position:relative;font-family:"Noto Sans JP";font-weight:700;white-space:nowrap;overflow:hidden;letter-spacing:-.01em}
+.nm{position:relative;font-family:"Noto Sans JP";font-weight:700;white-space:nowrap;overflow:hidden;letter-spacing:-.01em;color:var(--ink)}
 .top .nm{font-weight:900}
-.mc{position:relative;text-align:right;font:800 23px Inter;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
-.mc small,.pe small{font:700 11px "Noto Sans JP";color:var(--mut);margin-left:2px}
-.pe{position:relative;text-align:right;font:700 18px Inter;font-variant-numeric:tabular-nums;color:#D5DBE7}
-.pe.hot{color:#FFB547} .pe.cool{color:#4FD1B5} .pe.na{color:#56607A}
-.foot{position:absolute;left:40px;right:40px;bottom:24px;display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
-.note{font:500 11px/1.65 "Noto Sans JP";color:#707A92}
-.note .lg{display:inline-flex;gap:12px;margin-left:8px}
-.note .lg span::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;vertical-align:1px;background:currentColor}
+.mc{position:relative;text-align:right;font:900 30px Inter;font-variant-numeric:tabular-nums;letter-spacing:-.02em;color:var(--ink)}
+.top .mc{color:var(--red)}
+.mc small{font:800 13px "Noto Sans JP";color:var(--mut);margin-left:3px}
+.foot{position:absolute;left:40px;right:40px;bottom:26px;display:flex;justify-content:space-between;align-items:flex-end;gap:24px;color:#fff}
+.note{font:500 12px/1.7 "Noto Sans JP";color:rgba(255,255,255,.82)}
 .brand{text-align:right;white-space:nowrap}
-.brand .h{font:800 22px Inter;letter-spacing:-.01em}
-.brand .c{font:700 11.5px "Noto Sans JP";color:var(--gold);letter-spacing:.14em;margin-top:3px}
+.brand .h{font:900 26px Inter;letter-spacing:-.01em}
+.brand .c{font:800 12.5px "Noto Sans JP";letter-spacing:.16em;margin-top:3px;color:#FFE08A}
 </style></head><body>
-<div class="glow"></div><div class="grid"></div><div class="sun"></div>
+<div class="bg"></div><div class="rays"></div><div class="sun"></div>
 <div class="wrap">
-  <div class="kicker"><span>JAPAN MARKET CAP RANKING</span><span class="pill"><i></i>${esc(D.asOfLabel)}</span></div>
-  <h1><svg class="flag" viewBox="0 0 30 20"><rect width="30" height="20" fill="#fff"/><circle cx="15" cy="10" r="6" fill="#BC002D"/></svg>
-    <span class="t">日本企業 <em>時価総額</em>ランキング</span><span class="top">TOP${list.length}</span></h1>
-  <div class="kpis">
-    <div class="kpi first"><div class="l">👑 首位</div>
-      <div class="v">${logoHTML(list[0])}<span class="n">${esc(nameOf(list[0]))}</span></div>
-      <div class="s"><b>${fmtCho(cho(list[0].mcap))}兆円</b>　2位 ${esc(nameOf(list[1]))}に <b>${(gap12 / 1e12).toFixed(1)}兆円</b> 差</div></div>
-    <div class="kpi"><div class="l">TOP${list.length} 時価総額 合計</div>
-      <div class="v">${fmtCho(cho(total))}<small>兆円</small></div>
-      <div class="s">うちTOP10で <b>${Math.round((top10 / total) * 100)}%</b> を占める</div></div>
-    <div class="kpi"><div class="l">予想PER 中央値</div>
-      <div class="v">${median.toFixed(1)}<small>倍</small></div>
-      <div class="s">最高 <b>${esc(nameOf(pers[pers.length - 1]))} ${pers[pers.length - 1].per.toFixed(1)}倍</b><br>最低 <b>${esc(nameOf(pers[0]))} ${pers[0].per.toFixed(1)}倍</b></div></div>
-  </div>
+  <div class="kicker"><span class="pill"><i></i>${esc(D.asOfLabel)}</span><span>JAPAN MARKET CAP RANKING</span></div>
+  <h1><span class="t">日本企業 時価総額ランキング</span><span class="top">TOP${list.length}</span></h1>
   <div class="panels">${panel(0, half)}${panel(half, list.length)}</div>
 </div>
 <div class="foot">
   <div class="note">${esc(D.priceNote)}　時価総額＝株価×発行済株式数（自己株式含む）<br>
-    ${esc(D.perNote)}<span class="lg"><span style="color:#4FD1B5">15倍未満</span><span style="color:#FFB547">40倍以上</span></span><br>
     出所：${esc(D.source)}　※特定銘柄の推奨ではありません。投資判断はご自身の責任で</div>
   <div class="brand"><div class="h">@kazu22_stock</div><div class="c">銘柄攻略クラブ</div></div>
 </div>
@@ -163,16 +127,15 @@ h1 .top{font:900 64px/1 Inter;background:linear-gradient(180deg,#FFE7A3,#F5C451 
   await page.goto("file://" + htmlPath);
   await page.evaluate(() => document.fonts.ready);
   // はみ出す社名は縮小
-  await page.evaluate(() => document.querySelectorAll(".nm,.kpi .n").forEach((el) => {
+  await page.evaluate(() => document.querySelectorAll(".nm").forEach((el) => {
     let s = parseFloat(getComputedStyle(el).fontSize);
-    while (el.scrollWidth > el.clientWidth && s > 11) el.style.fontSize = (s -= 0.5) + "px";
+    while (el.scrollWidth > el.clientWidth && s > 12) el.style.fontSize = (s -= 0.5) + "px";
   }));
-  const box = await page.evaluate(() => ({
+  console.log(await page.evaluate(() => ({
     panelsBottom: document.querySelector(".panels").getBoundingClientRect().bottom,
     footTop: document.querySelector(".foot").getBoundingClientRect().top,
-    overflowKpi: [...document.querySelectorAll(".kpi .s,.kpi .v")].some((e) => e.scrollWidth > e.clientWidth + 1),
-  }));
-  console.log(box);
+    titleRight: document.querySelector("h1 .top").getBoundingClientRect().right,
+  })));
   await page.screenshot({ path: path.resolve(__dirname, outPath) });
   await browser.close();
 })();
