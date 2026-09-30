@@ -12,8 +12,8 @@ node render.js data.json ranking.png
 
 ## 必要な許可ドメイン（Claude Code on the web の Network access）
 - companiesmarketcap.com（米国ランキング・ロゴ・日本の検証用）
-- fc.yahoo.com / query1.finance.yahoo.com / query2.finance.yahoo.com（時価総額・米国予想PER・為替）
-- finance.yahoo.co.jp（日本の会社予想PER）
+- fc.yahoo.com / query1.finance.yahoo.com / query2.finance.yahoo.com（米国予想PER・為替）
+- finance.yahoo.co.jp（日本の時価総額ランキング・会社予想PER。日本側の正はこのサイト）
 
 ## データ定義
 - 時価総額：日本は円建て、米国はドル建てを当日レートで兆円換算（ドル併記）

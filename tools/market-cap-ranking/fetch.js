@@ -57,19 +57,51 @@ if (!fx) throw new Error("USDJPY を取得できません");
 const usdjpy = fx.regularMarketPrice;
 
 // ---- 3. 日本: 候補 + CSV上位で母集団 → Yahoo で円建て時価総額 ----
-const jpCodes = new Set(Object.keys(META.jp));
-for (const r of cmcJP.slice(0, 30)) {
-  const m = r.symbol.match(/^(\w{4})\.T$/);
-  if (m) jpCodes.add(m[1]);
-  else if (!Object.values(META.jp).some((x) => norm(r.name).includes(norm(x.en)))) console.warn(`  ? CSV上位に未登録銘柄: ${r.name} (${r.symbol}) → meta.js に追加を検討`);
+// 正: Yahoo!ファイナンス「時価総額上位」ランキング（時価総額＝株価×発行済株式数（自己株含む））。
+// Yahoo Finance(米) の marketCap は自己株を除くため、トヨタ等で数兆円ずれる → フォールバック専用。
+function yjRanking() {
+  const out = [];
+  for (let page = 1; out.length < 20 && page <= 2; page++) {
+    const html = tryGet(`https://finance.yahoo.co.jp/stocks/ranking/marketCapitalHigh?market=all&page=${page}`);
+    if (!html) break;
+    const m = html.match(/__PRELOADED_STATE__\s*=\s*(\{[\s\S]*?\})\s*<\/script>/);
+    let items = [];
+    if (m) {
+      // 形が変わっても拾えるよう、コード(4桁英数)と数値を持つオブジェクト配列を探索する
+      const walk = (o) => {
+        if (Array.isArray(o) && o.length >= 10 && o.every((x) => x && typeof x === "object")) {
+          const codeKey = Object.keys(o[0]).find((k) => /code/i.test(k) && /^\w{4}(\.T)?$/.test(String(o[0][k])));
+          const capKey = Object.keys(o[0]).find((k) => /marketCap|totalPrice|rankingResult/i.test(k));
+          if (codeKey && capKey) { items = o.map((x) => ({ code: String(x[codeKey]).replace(/\.T$/, ""), raw: x[capKey], x })); return; }
+        }
+        if (o && typeof o === "object") for (const v of Object.values(o)) { if (items.length) return; walk(v); }
+      };
+      try { walk(JSON.parse(m[1])); } catch (e) { console.warn("  ! PRELOADED_STATE parse失敗"); }
+    }
+    for (const it of items) {
+      const raw = typeof it.raw === "object" ? JSON.stringify(it.raw) : String(it.raw);
+      const n = parseFloat((raw.match(/[\d,]+(\.\d+)?/) || ["0"])[0].replace(/,/g, ""));
+      out.push({ key: it.code, mcap: n * 1e6 }); // 表示単位は百万円
+    }
+    if (!items.length) console.warn(`  ! ランキングの構造を解釈できず (page=${page})。キー例: ${m ? m[1].slice(0, 300) : "PRELOADED_STATEなし"}`);
+  }
+  return out;
 }
-const jq = yQuotes([...jpCodes].map((c) => `${c}.T`));
-const jp = [...jpCodes]
-  .map((c) => ({ key: c, q: jq[`${c}.T`] }))
-  .filter((x) => x.q && x.q.marketCap)
-  .map((x) => ({ key: x.key, mcap: x.q.marketCap, price: x.q.regularMarketPrice, time: x.q.regularMarketTime, yForwardPE: x.q.forwardPE, yName: x.q.longName }))
-  .sort((a, b) => b.mcap - a.mcap)
-  .slice(0, 20);
+console.log("Yahoo!ファイナンス: 時価総額上位ランキング");
+let jp = yjRanking().slice(0, 20);
+let jpSource = "Yahoo!ファイナンス";
+const jq = yQuotes([...new Set([...jp.map((r) => r.key), ...Object.keys(META.jp)])].map((c) => `${c}.T`));
+if (jp.length < 20) {
+  console.warn("  ! Yahoo!ファイナンスのランキング取得失敗 → Yahoo Finance(米) の marketCap で代替（自己株除外ベースになる点に注意）");
+  jpSource = "Yahoo Finance（自己株除く）";
+  jp = Object.keys(META.jp).map((c) => ({ key: c, mcap: (jq[`${c}.T`] || {}).marketCap })).filter((r) => r.mcap).sort((a, b) => b.mcap - a.mcap).slice(0, 20);
+}
+jp = jp.map((r) => { const q = jq[`${r.key}.T`] || {}; return { ...r, time: q.regularMarketTime, yForwardPE: q.forwardPE, yName: q.longName }; });
+for (const r of cmcJP.slice(0, 25)) {
+  const m = r.symbol.match(/^(\w{4})\.T$/);
+  const known = m ? META.jp[m[1]] : Object.values(META.jp).some((x) => norm(r.name).includes(norm(x.en)));
+  if (!known) console.warn(`  ? 検証: companiesmarketcap上位の未登録銘柄 ${r.name} (${r.symbol})`);
+}
 jp.forEach((r) => { if (!META.jp[r.key]) console.warn(`  ? meta未登録: ${r.key} ${r.yName} → 表示名を meta.js に追加`); });
 
 // 会社予想PER: Yahoo!ファイナンス(日本) の個別ページ
@@ -128,7 +160,7 @@ const data = {
   usdjpy,
   perNote: `予想PER：日本＝${perSource}、米国＝アナリスト予想（Forward P/E）`,
   priceNote: `株価 日本${jst(Math.max(...jp.map((r) => r.time)))}／米国${jst(Math.max(...us.map((r) => r.time || 0)))}（日本時間）`,
-  source: "Yahoo!ファイナンス、Yahoo Finance、companiesmarketcap.com",
+  source: `${jpSource}（日本）、Yahoo Finance・companiesmarketcap.com（米国）`,
   jp: jp.map(({ key, mcap, per }) => ({ key, mcap, per })),
   us: us.map(({ key, name, mcap, per }) => ({ key, ...(name ? { name } : {}), mcap, per })),
 };
