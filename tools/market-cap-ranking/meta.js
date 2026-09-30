@@ -42,6 +42,9 @@ module.exports = {
     "4568": { en: "Daiichi Sankyo", name: "第一三共", color: "#C8102E", mono: "DS" },
     "6178": { en: "Japan Post Holdings", name: "日本郵政", color: "#E60012", mono: "〒" },
     "6367": { en: "Daikin", name: "ダイキン工業", color: "#0097E0", mono: "D" },
+    "6752": { en: "Panasonic", name: "パナソニック ホールディングス", color: "#0041C0", mono: "P" },
+    "6146": { en: "Disco", name: "ディスコ", color: "#E60012", mono: "D" },
+    "7751": { en: "Canon", name: "キヤノン", color: "#CC0000", mono: "C" },
   },
   us: {
     NVDA: { name: "エヌビディア", color: "#76B900", si: "nvidia" },
