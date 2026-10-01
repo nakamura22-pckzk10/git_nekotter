@@ -6,13 +6,13 @@ from PIL import Image, ImageChops
 
 DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logos")
 # 左端のシンボルだけ使う銘柄（ワードマークだと小さすぎて潰れるもの）
-SYMBOL_ONLY = {"8306", "7203", "7182", "9432", "4519"}
+SYMBOL_ONLY = {"8306", "7203", "7182", "9432", "4519", "NVDA", "META", "AVGO"}
 # 文字間より広い空白で区切って左側だけ使う（NEC＋スローガン等）
-FIRST_WORD = {"6701": 8}
+FIRST_WORD = {"6701": 8, "MSFT": 6}
 # 下段のタグライン（企業スローガン・正式社名）を落として上段のロゴだけ使う
 TOP_PART = {"7267", "6902", "9501", "7201"}
 # 画像が粗い/小さいので simple-icons のベクターに任せる（meta.js の si 指定を使う）
-USE_VECTOR = {"7011", "6503", "8058"}
+USE_VECTOR = {"7011", "6503", "8058", "TSLA"}
 
 
 def mask(im, top=1.0):

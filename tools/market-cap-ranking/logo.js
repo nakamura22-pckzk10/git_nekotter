@@ -9,7 +9,7 @@ const siBySlug = Object.fromEntries(Object.values(si).filter((x) => x && x.slug)
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 function logoHTML(key, fallbackName = key) {
-  const m = META.jp[key] || { name: fallbackName, color: "#444", mono: fallbackName[0] };
+  const m = META.jp[key] || META.us[key] || { name: fallbackName, color: "#444", mono: fallbackName[0] };
   for (const ext of ["png", "webp", "svg", "jpg"]) {
     const f = path.join(LOGO_DIR, `${key}.${ext}`);
     if (fs.existsSync(f)) {
