@@ -67,7 +67,7 @@ h1 .top{font:900 50px/1 Inter;color:var(--red);background:#fff;padding:6px 14px 
 .ph{display:flex;align-items:center;gap:10px;height:34px;padding:0 14px;font:900 15px "Noto Sans JP";color:#fff}
 .jp .ph{background:#1B1D24} .us .ph{background:var(--navy)}
 .flag{height:16px;border-radius:2px;box-shadow:0 0 0 1px rgba(255,255,255,.4)}
-.row{position:relative;display:grid;grid-template-columns:30px 58px 1fr 104px;align-items:center;column-gap:10px;padding:0 14px 0 8px;height:53.6px;border-bottom:1px solid var(--line)}
+.row{position:relative;display:grid;grid-template-columns:30px 58px 1fr 104px;align-items:center;column-gap:10px;padding:0 14px 0 8px;height:56.6px;border-bottom:1px solid var(--line)}
 .row:last-child{border-bottom:0}
 .bar{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,rgba(209,0,44,0),rgba(209,0,44,.06))}
 .us .bar{background:linear-gradient(90deg,rgba(30,58,138,0),rgba(30,58,138,.07))}
@@ -101,11 +101,6 @@ h1 .top{font:900 50px/1 Inter;color:var(--red);background:#fff;padding:6px 14px 
   <h1>${esc(D.title.replace(/\s*TOP\d+$/, ""))}<span class="top">TOP10</span></h1>
   ${D.eras.map(era).join("")}
 </div>
-<div class="foot">
-  <div class="note">米国は円換算（2010年末 1ドル＝${D.eras[0].usdjpy.toFixed(2)}円／2026年10/1 23:00 1ドル＝${D.eras[1].usdjpy.toFixed(2)}円）。社名は当時のもの<br>
-    時価総額：日本＝株価×発行済株式数、米国＝株価×発行済株式数（自己株除く）<br>出所：${esc(D.sources)}</div>
-  <div class="brand"><div class="h">@kazu22_stock</div><div class="c">銘柄攻略クラブ</div></div>
-</div>
 ${D.provisional && D.provisional.length ? `<div class="wm"><span>確認中 PREVIEW</span></div>` : ""}
 </body></html>`;
 
@@ -122,7 +117,7 @@ ${D.provisional && D.provisional.length ? `<div class="wm"><span>確認中 PREVI
   }));
   console.log(await page.evaluate(() => ({
     lastEraBottom: [...document.querySelectorAll(".era")].pop().getBoundingClientRect().bottom,
-    footTop: document.querySelector(".foot").getBoundingClientRect().top,
+    
     h1Right: document.querySelector("h1 .top").getBoundingClientRect().right,
   })));
   await page.screenshot({ path: path.resolve(__dirname, outPath) });

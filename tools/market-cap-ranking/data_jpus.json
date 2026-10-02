@@ -220,8 +220,5 @@
    ]
   }
  ],
- "sources": "日本：日本経済新聞（2010年末・東証1部）、Yahoo!ファイナンス（2026年）／米国：companiesmarketcap.com、Yahoo Finance",
- "provisional": [
-  "GOOG@2010"
- ]
+ "sources": "日本：日本経済新聞（2010年末・東証1部）、Yahoo!ファイナンス（2026年10/1終値）／米国：companiesmarketcap.com（2010年末。グーグルのみfinhacker.cz）、Yahoo Finance（2026年10/1 23:00の株価で算出）"
 }
