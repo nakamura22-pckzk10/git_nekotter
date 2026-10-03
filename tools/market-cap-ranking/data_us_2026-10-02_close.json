@@ -1,0 +1,118 @@
+{
+ "usdjpy": 157.83,
+ "fxTime": "10/03 13:21",
+ "rows": [
+  {
+   "name": "NVIDIA",
+   "symbol": "NVDA",
+   "cap": 5649190617088.0,
+   "price": 233.95,
+   "csvprice": 233.95,
+   "t": "10/03 05:00"
+  },
+  {
+   "name": "Apple",
+   "symbol": "AAPL",
+   "cap": 4869931925504.0,
+   "price": 333.69,
+   "csvprice": 333.69,
+   "t": "10/03 05:00"
+  },
+  {
+   "name": "Alphabet (Google)",
+   "symbol": "GOOG",
+   "cap": 4162458484736.0,
+   "price": 340.35,
+   "csvprice": 340.35,
+   "t": "10/03 05:00"
+  },
+  {
+   "name": "Microsoft",
+   "symbol": "MSFT",
+   "cap": 3842942959616.0,
+   "price": 517.53,
+   "csvprice": 517.53,
+   "t": "10/03 05:00"
+  },
+  {
+   "name": "Amazon",
+   "symbol": "AMZN",
+   "cap": 2712973606912.0,
+   "price": 251.52,
+   "csvprice": 251.52,
+   "t": "10/03 05:00"
+  },
+  {
+   "name": "SpaceX",
+   "symbol": "SPCX",
+   "cap": 2094168801280.0,
+   "price": 158.96,
+   "csvprice": 158.96,
+   "t": "10/03 05:00"
+  },
+  {
+   "name": "Meta Platforms (Facebook)",
+   "symbol": "META",
+   "cap": 1854788337664.0,
+   "price": 728.08,
+   "csvprice": 728.08,
+   "t": "10/03 05:00"
+  },
+  {
+   "name": "Broadcom",
+   "symbol": "AVGO",
+   "cap": 1695307005952.0,
+   "price": 355.14,
+   "csvprice": 355.14,
+   "t": "10/03 05:00"
+  },
+  {
+   "name": "Tesla",
+   "symbol": "TSLA",
+   "cap": 1463662804992.0,
+   "price": 370.59,
+   "csvprice": 370.59,
+   "t": "10/03 05:00"
+  },
+  {
+   "name": "Micron Technology",
+   "symbol": "MU",
+   "cap": 1213973397504.0,
+   "price": 1074.89,
+   "csvprice": 1074.89,
+   "t": "10/03 05:00"
+  },
+  {
+   "name": "Berkshire Hathaway",
+   "symbol": "BRK-B",
+   "cap": 1076027719680.0,
+   "price": 502.65,
+   "csvprice": 502.65,
+   "t": "10/03 05:00"
+  },
+  {
+   "name": "AMD",
+   "symbol": "AMD",
+   "cap": 1034842210304.0,
+   "price": 633.91,
+   "csvprice": 633.91,
+   "t": "10/03 05:00"
+  },
+  {
+   "name": "Eli Lilly",
+   "symbol": "LLY",
+   "cap": 1018687389696.0,
+   "price": 1142.85,
+   "csvprice": 1142.85,
+   "t": "10/03 05:00"
+  },
+  {
+   "name": "JPMorgan Chase",
+   "symbol": "JPM",
+   "cap": 883527974912.0,
+   "price": 332.38,
+   "csvprice": 332.38,
+   "t": "10/03 05:00"
+  }
+ ]
+}
